@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  /* কাস্টম কালার সেট করা হলো */
+  --color-scoutGreen: #225B3E;
+  --color-scoutYellow: #FCD116;
+
+  /* গুগল ফন্ট সেট করা হলো (যেগুলো আমরা index.html এ লিংক করেছি) */
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+}
+
+/* যদি পুরো বডিতে ডিফল্টভাবে Poppins ফন্ট রাখতে চাও */
+@layer base {
+  body {
+    font-family: var(--font-poppins);
+  }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out forwards;
+}
