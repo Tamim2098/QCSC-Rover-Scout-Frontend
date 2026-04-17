@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase.config";
 
-
 // ── Auto-redirect success screen ──
 const SuccessScreen = ({ onNavigate }) => {
   const [count, setCount] = React.useState(3);
@@ -37,7 +36,6 @@ const SuccessScreen = ({ onNavigate }) => {
       <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize:13, color:'rgba(255,255,255,0.4)', marginTop:8, textAlign:'center', maxWidth:300, lineHeight:1.7 }}>
         We've received your application.<br/>We'll verify and contact you shortly.
       </p>
-      {/* Countdown ring */}
       <div style={{ marginTop:28, position:'relative', width:56, height:56 }}>
         <svg width="56" height="56" viewBox="0 0 56 56" style={{ transform:'rotate(-90deg)' }}>
           <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="3"/>
@@ -59,20 +57,36 @@ const SuccessScreen = ({ onNavigate }) => {
   );
 };
 
+// ── Religion options ──
+const RELIGIONS = [
+  'ইসলাম (Islam)',
+  'হিন্দু (Hinduism)',
+  'খ্রিষ্টান (Christianity)',
+  'বৌদ্ধ (Buddhism)',
+  'অন্যান্য (Other)',
+];
+
+// ── Blood Group options ──
+const BLOOD_GROUPS = ['A+', 'A−', 'B+', 'B−', 'AB+', 'AB−', 'O+', 'O−'];
+
 const Join = () => {
   const navigate = useNavigate();
-  const [isVisible, setIsVisible]             = useState(false);
-  const [submitted, setSubmitted]             = useState(false);
-  const [focused, setFocused]                 = useState('');
-  const [gender, setGender]                   = useState('');
-  const [photo, setPhoto]                     = useState(null);
-  const [photoFile, setPhotoFile]             = useState(null);
-  const [loading, setLoading]                 = useState(false);
+  const [isVisible, setIsVisible]   = useState(false);
+  const [submitted, setSubmitted]   = useState(false);
+  const [focused, setFocused]       = useState('');
+  const [gender, setGender]         = useState('');
+  const [religion, setReligion]     = useState('');
+  const [bloodGroup, setBloodGroup] = useState('');
+  const [photo, setPhoto]           = useState(null);
+  const [photoFile, setPhotoFile]   = useState(null);
+  const [loading, setLoading]       = useState(false);
   const photoInputRef = useRef(null);
   const sectionRef    = useRef(null);
 
   const [formData, setFormData] = useState({
-    name_bn: '', name_en: '', father: '', mother: '',
+    name_bn: '', name_en: '',
+    father: '', father_bn: '',
+    mother: '', mother_bn: '',
     dob: '', addr_present: '', addr_perm: '',
     class: '', section: '', roll: '',
     email: '', phone: '', guardian: '', relation: '',
@@ -97,15 +111,12 @@ const Join = () => {
     reader.readAsDataURL(file);
   };
 
-  // Upload photo to Cloudinary (Free)
   const uploadToCloudinary = async (file) => {
     const cloudName = "dac4g49sw";
     const uploadPreset = "rover_image";
-
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', uploadPreset);
-
     const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
       method: 'POST',
       body: formData,
@@ -117,10 +128,9 @@ const Join = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!gender) {
-      alert('Please select your gender.');
-      return;
-    }
+    if (!gender)     { alert('Please select your gender.');      return; }
+    if (!religion)   { alert('Please select your religion.');    return; }
+    if (!bloodGroup) { alert('Please select your blood group.'); return; }
 
     setLoading(true);
     try {
@@ -138,6 +148,8 @@ const Join = () => {
       await addDoc(collection(db, 'registrations'), {
         ...formData,
         gender,
+        religion,
+        bloodGroup,
         photoUrl,
         status: 'pending',
         submittedAt: serverTimestamp(),
@@ -152,12 +164,9 @@ const Join = () => {
     }
   };
 
-  // ── Navigate to Home and scroll to very top ──
   const handleNavigateHome = () => {
     navigate('/', { replace: true });
-    setTimeout(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    }, 50);
+    setTimeout(() => { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }, 50);
   };
 
   const inp = (name) => ({
@@ -172,6 +181,26 @@ const Join = () => {
     outline: 'none',
     transition: 'border 0.2s, background 0.2s, box-shadow 0.2s',
     boxShadow: focused === name ? '0 0 0 3px rgba(240,165,0,0.07)' : 'none',
+  });
+
+  const selStyle = (val) => ({
+    width: '100%',
+    background: val ? 'rgba(240,165,0,0.04)' : 'rgba(255,255,255,0.03)',
+    border: `1px solid ${val ? 'rgba(240,165,0,0.35)' : 'rgba(255,255,255,0.1)'}`,
+    borderRadius: '7px',
+    padding: '11px 14px',
+    color: val ? '#fff' : 'rgba(255,255,255,0.25)',
+    fontSize: '14px',
+    fontFamily: "'DM Sans', sans-serif",
+    outline: 'none',
+    cursor: 'pointer',
+    transition: 'border 0.2s, background 0.2s',
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 14px center',
+    paddingRight: '38px',
   });
 
   const lbl = {
@@ -357,7 +386,6 @@ const Join = () => {
         @media(min-width:480px) { .r3 { grid-template-columns: 1fr 1fr 1fr; } }
       `}</style>
 
-      {/* ── SUCCESS SCREEN ── */}
       {submitted && <SuccessScreen onNavigate={handleNavigateHome} />}
 
       <div
@@ -412,6 +440,7 @@ const Join = () => {
             {/* ── FORM ── */}
             <form onSubmit={handleSubmit} className="join-form-body">
 
+              {/* Full Name */}
               {sectionHeader('পূর্ণনাম — Full Name')}
               <div className="r2" style={{ marginBottom:'20px' }}>
                 <div>
@@ -430,16 +459,35 @@ const Join = () => {
 
               {dividerLine}
 
+              {/* Parents' Names — বাংলা + English উভয়ই */}
               {sectionHeader("Parents' Names")}
-              <div className="r2" style={{ marginBottom:'20px' }}>
+
+              {/* Father row */}
+              <div className="r2" style={{ marginBottom:'14px' }}>
                 <div>
-                  <label style={lbl}>পিতার নাম — Father's Name</label>
+                  <label style={lbl}>পিতার নাম — বাংলায়</label>
+                  <input type="text" name="father_bn" required placeholder="বাংলায় পিতার নাম"
+                    value={formData.father_bn} onChange={handleChange}
+                    style={inp('father_bn')} onFocus={()=>setFocused('father_bn')} onBlur={()=>setFocused('')} />
+                </div>
+                <div>
+                  <label style={lbl}>Father's Name — English</label>
                   <input type="text" name="father" required placeholder="Father's full name"
                     value={formData.father} onChange={handleChange}
                     style={inp('father')} onFocus={()=>setFocused('father')} onBlur={()=>setFocused('')} />
                 </div>
+              </div>
+
+              {/* Mother row */}
+              <div className="r2" style={{ marginBottom:'20px' }}>
                 <div>
-                  <label style={lbl}>মাতার নাম — Mother's Name</label>
+                  <label style={lbl}>মাতার নাম — বাংলায়</label>
+                  <input type="text" name="mother_bn" required placeholder="বাংলায় মাতার নাম"
+                    value={formData.mother_bn} onChange={handleChange}
+                    style={inp('mother_bn')} onFocus={()=>setFocused('mother_bn')} onBlur={()=>setFocused('')} />
+                </div>
+                <div>
+                  <label style={lbl}>Mother's Name — English</label>
                   <input type="text" name="mother" required placeholder="Mother's full name"
                     value={formData.mother} onChange={handleChange}
                     style={inp('mother')} onFocus={()=>setFocused('mother')} onBlur={()=>setFocused('')} />
@@ -448,6 +496,7 @@ const Join = () => {
 
               {dividerLine}
 
+              {/* DOB & Gender */}
               {sectionHeader('Date of Birth & Gender')}
               <div className="r2" style={{ marginBottom:'20px' }}>
                 <div>
@@ -471,21 +520,35 @@ const Join = () => {
 
               {dividerLine}
 
-              {/* ── NID / Birth Registration ── */}
+              {/* Religion & Blood Group */}
+              {sectionHeader('Religion & Blood Group — ধর্ম ও রক্তের গ্রুপ')}
+              <div className="r2" style={{ marginBottom:'20px' }}>
+                <div>
+                  <label style={lbl}>ধর্ম — Religion</label>
+                  <select required value={religion} onChange={e => setReligion(e.target.value)} style={selStyle(religion)}>
+                    <option value="" disabled>ধর্ম নির্বাচন করুন</option>
+                    {RELIGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={lbl}>রক্তের গ্রুপ — Blood Group</label>
+                  <select required value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} style={selStyle(bloodGroup)}>
+                    <option value="" disabled>রক্তের গ্রুপ নির্বাচন করুন</option>
+                    {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {dividerLine}
+
+              {/* NID */}
               {sectionHeader('পরিচয় নম্বর — Identity Number')}
               <div style={{ marginBottom:'20px' }}>
                 <label style={lbl}>NID / জন্ম নিবন্ধন নম্বর — NID / Birth Registration No.</label>
-                <input
-                  type="text"
-                  name="nid"
-                  required
+                <input type="text" name="nid" required
                   placeholder="NID নম্বর অথবা জন্ম নিবন্ধন নম্বর লিখুন"
-                  value={formData.nid}
-                  onChange={handleChange}
-                  style={inp('nid')}
-                  onFocus={()=>setFocused('nid')}
-                  onBlur={()=>setFocused('')}
-                />
+                  value={formData.nid} onChange={handleChange}
+                  style={inp('nid')} onFocus={()=>setFocused('nid')} onBlur={()=>setFocused('')} />
                 <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize:'11px', color:'rgba(255,255,255,0.2)', marginTop:'6px', lineHeight:1.6 }}>
                   * যাদের NID নেই তারা জন্ম নিবন্ধন নম্বর দিন।
                 </p>
@@ -493,6 +556,7 @@ const Join = () => {
 
               {dividerLine}
 
+              {/* Address */}
               {sectionHeader('Address')}
               <div style={{ display:'flex', flexDirection:'column', gap:'14px', marginBottom:'20px' }}>
                 <div>
@@ -511,6 +575,7 @@ const Join = () => {
 
               {dividerLine}
 
+              {/* Institution */}
               {sectionHeader('Institution & Class Details')}
               <div style={{ display:'flex', flexDirection:'column', gap:'14px', marginBottom:'20px' }}>
                 <div>
@@ -544,6 +609,7 @@ const Join = () => {
 
               {dividerLine}
 
+              {/* Contact */}
               {sectionHeader('Contact Information')}
               <div className="r2" style={{ marginBottom:'20px' }}>
                 <div>
@@ -562,6 +628,7 @@ const Join = () => {
 
               {dividerLine}
 
+              {/* Guardian */}
               {sectionHeader('Guardian Consent — অভিভাবকের অনুমতি')}
               <div className="consent-box" style={{ marginBottom:'28px' }}>
                 <p style={{ fontFamily:"'DM Sans',sans-serif", fontSize:'12px', color:'rgba(255,255,255,0.4)', lineHeight:1.8, marginBottom:'12px' }}>
@@ -585,11 +652,7 @@ const Join = () => {
 
               {/* Submit */}
               <button type="submit" className="submit-btn" disabled={loading}>
-                {loading ? (
-                  <><div className="spin" />Submitting...</>
-                ) : (
-                  'Submit Registration →'
-                )}
+                {loading ? <><div className="spin" />Submitting...</> : 'Submit Registration →'}
               </button>
 
             </form>

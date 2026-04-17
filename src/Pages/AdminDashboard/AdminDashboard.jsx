@@ -697,7 +697,6 @@ export default function AdminDashboard() {
           onMouseLeave={e => e.currentTarget.style.borderColor = BORDER}
         >
           <div style={{ padding: '15px 18px' }}>
-            {/* Top row: avatar + name + status + buttons */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
               <Avatar url={r.photoUrl} name={r.name_en} size={52} onClick={r.photoUrl ? () => setLb({ url: r.photoUrl, name: r.name_en }) : undefined} />
               <div style={{ flex: 1, minWidth: 160 }}>
@@ -720,14 +719,29 @@ export default function AdminDashboard() {
           {exp === r.id && (
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.055)', padding: '18px 18px', background: 'rgba(0,0,0,0.22)', animation: 'slideDown 0.25s ease' }}>
               {[
-                { sec: 'পূর্ণনাম — Full Name',                      fields: [['বাংলা নাম', r.name_bn], ['ইংরেজি নাম', r.name_en]] },
-                { sec: "Parents' Names",                              fields: [["পিতার নাম — Father's Name", r.father], ["মাতার নাম — Mother's Name", r.mother]] },
-                { sec: 'Date of Birth & Gender',                      fields: [['জন্ম তারিখ — Date of Birth', r.dob], ['লিঙ্গ — Gender', r.gender]] },
-                { sec: 'পরিচয় নম্বর — Identity Number',             fields: [['NID / জন্ম নিবন্ধন নম্বর', r.nid]] },
-                { sec: 'Address',                                     fields: [['বর্তমান ঠিকানা — Present Address', r.addr_present], ['স্থায়ী ঠিকানা — Permanent Address', r.addr_perm]] },
-                { sec: 'Institution & Class Details',                 fields: [['প্রতিষ্ঠান — Institution', r.institution], ['শ্রেণী — Class', r.class], ['সেকশন — Section', r.section], ['রোল — Roll No.', r.roll]] },
-                { sec: 'Contact Information',                         fields: [['ই-মেইল — Email', r.email], ['মোবাইল — Phone', r.phone]] },
-                { sec: 'Guardian Consent — অভিভাবকের অনুমতি',       fields: [['অভিভাবকের নাম — Guardian Name', r.guardian], ['সম্পর্ক — Relation', r.relation]] },
+                { sec: 'পূর্ণনাম — Full Name',
+                  fields: [['বাংলা নাম', r.name_bn], ['ইংরেজি নাম', r.name_en]] },
+
+                // ── Updated: Father & Mother with Bangla names ──
+                { sec: "পিতার নাম — Father's Name",
+                  fields: [['বাংলায়', r.father_bn], ['ইংরেজিতে', r.father]] },
+                { sec: "মাতার নাম — Mother's Name",
+                  fields: [['বাংলায়', r.mother_bn], ['ইংরেজিতে', r.mother]] },
+
+                { sec: 'Date of Birth & Gender',
+                  fields: [['জন্ম তারিখ — Date of Birth', r.dob], ['লিঙ্গ — Gender', r.gender]] },
+                { sec: 'Religion & Blood Group — ধর্ম ও রক্তের গ্রুপ',
+                  fields: [['ধর্ম — Religion', r.religion], ['রক্তের গ্রুপ — Blood Group', r.bloodGroup]] },
+                { sec: 'পরিচয় নম্বর — Identity Number',
+                  fields: [['NID / জন্ম নিবন্ধন নম্বর', r.nid]] },
+                { sec: 'Address',
+                  fields: [['বর্তমান ঠিকানা — Present Address', r.addr_present], ['স্থায়ী ঠিকানা — Permanent Address', r.addr_perm]] },
+                { sec: 'Institution & Class Details',
+                  fields: [['প্রতিষ্ঠান — Institution', r.institution], ['শ্রেণী — Class', r.class], ['সেকশন — Section', r.section], ['রোল — Roll No.', r.roll]] },
+                { sec: 'Contact Information',
+                  fields: [['ই-মেইল — Email', r.email], ['মোবাইল — Phone', r.phone]] },
+                { sec: 'Guardian Consent — অভিভাবকের অনুমতি',
+                  fields: [['অভিভাবকের নাম — Guardian Name', r.guardian], ['সম্পর্ক — Relation', r.relation]] },
               ].map(({ sec, fields }) => {
                 const valid = fields.filter(([, v]) => v);
                 if (!valid.length) return null;
@@ -837,9 +851,7 @@ export default function AdminDashboard() {
               onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.transform = visibleIds.has(g.id) ? 'translateY(0)' : 'translateY(10px)'; }}
             >
               {visibleIds.has(g.id) ? (
-                <img
-                  src={g.url} alt=""
-                  loading="lazy"
+                <img src={g.url} alt="" loading="lazy"
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.3s' }}
                   onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.07)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
@@ -853,9 +865,7 @@ export default function AdminDashboard() {
                 style={{ position: 'absolute', top: 7, right: 7, width: 28, height: 28, borderRadius: 8, background: 'rgba(0,0,0,0.72)', border: '1px solid rgba(248,113,113,0.35)', color: '#f87171', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 1, transition: 'all 0.2s', backdropFilter: 'blur(6px)' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.2)'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.6)'; e.currentTarget.style.transform = 'scale(1.1)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.72)'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.35)'; e.currentTarget.style.transform = 'scale(1)'; }}
-              >
-                <Trash2 size={11} />
-              </button>
+              ><Trash2 size={11} /></button>
             </div>
           ))}
         </div>
@@ -905,11 +915,7 @@ export default function AdminDashboard() {
       </div>
       {ld.g ? <Load /> : gals.length === 0
         ? <None t="No photos yet — click Upload Photo to get started." />
-        : <GalleryGrid
-            gals={gals}
-            onOpen={g => setLb({ url: g.url, name: 'Gallery Photo' })}
-            onDel={id => del('gallery', id)}
-          />
+        : <GalleryGrid gals={gals} onOpen={g => setLb({ url: g.url, name: 'Gallery Photo' })} onDel={id => del('gallery', id)} />
       }
     </div>
   );
@@ -946,20 +952,13 @@ export default function AdminDashboard() {
         @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
         @keyframes jpulse    { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.7)} }
         @keyframes toastIn   { from{opacity:0;transform:translateX(24px) scale(0.95)} to{opacity:1;transform:translateX(0) scale(1)} }
-
-        @keyframes cmteOrbFloat {
-          0%,100% { transform: translate(0,0); }
-          50%      { transform: translate(16px, 20px); }
-        }
+        @keyframes cmteOrbFloat { 0%,100% { transform: translate(0,0); } 50% { transform: translate(16px, 20px); } }
 
         .page-in { animation: fadeIn 0.25s ease; }
-
         .ad-sc::-webkit-scrollbar       { width: 4px; }
         .ad-sc::-webkit-scrollbar-track { background: transparent; }
         .ad-sc::-webkit-scrollbar-thumb { background: rgba(240,165,0,0.1); border-radius: 10px; }
-
         .nav-btn:hover { background: rgba(240,165,0,0.06) !important; color: rgba(255,255,255,0.7) !important; }
-
         input::placeholder { color: rgba(255,255,255,0.2); }
         select option { background: #0e1a14; }
 
@@ -971,31 +970,22 @@ export default function AdminDashboard() {
           background-size: 44px 44px;
           mask-image: radial-gradient(ellipse 90% 60% at 50% 30%, black 20%, transparent 100%);
         }
-
         .ad-orb-1 {
-          position: fixed;
-          width: 350px; height: 350px;
-          border-radius: 50%;
+          position: fixed; width: 350px; height: 350px; border-radius: 50%;
           pointer-events: none; z-index: 0;
           background: radial-gradient(circle, rgba(20,90,55,0.18) 0%, transparent 70%);
-          top: -80px; right: -80px;
-          filter: blur(60px);
+          top: -80px; right: -80px; filter: blur(60px);
           animation: cmteOrbFloat 11s ease-in-out infinite;
         }
-
         .ad-orb-2 {
-          position: fixed;
-          width: 260px; height: 260px;
-          border-radius: 50%;
+          position: fixed; width: 260px; height: 260px; border-radius: 50%;
           pointer-events: none; z-index: 0;
           background: radial-gradient(circle, rgba(202,138,4,0.12) 0%, transparent 70%);
-          bottom: 8%; left: -60px;
-          filter: blur(60px);
+          bottom: 8%; left: -60px; filter: blur(60px);
           animation: cmteOrbFloat 14s ease-in-out infinite reverse;
         }
       `}</style>
 
-      {/* Background layers */}
       <div className="ad-grid-bg" />
       <div className="ad-orb-1" />
       <div className="ad-orb-2" />
@@ -1015,7 +1005,6 @@ export default function AdminDashboard() {
           </header>
         )}
 
-        {/* Overlay */}
         {isMobile && drawer && <div onClick={() => setDrawer(false)} style={{ position: 'fixed', top: 56, left: 0, right: 0, bottom: 0, zIndex: 198, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }} />}
 
         {/* ── Sidebar ── */}
@@ -1030,8 +1019,6 @@ export default function AdminDashboard() {
           transition: 'left 0.3s cubic-bezier(.4,0,.2,1)',
           boxShadow: isMobile && drawer ? '8px 0 40px rgba(0,0,0,0.7)' : 'none',
         }}>
-
-          {/* Logo */}
           {!isMobile && (
             <div style={{ padding: '22px 18px 18px', borderBottom: `1px solid ${BORDER}`, position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg,rgba(10,35,20,0.6) 0%,rgba(5,15,10,0.8) 100%)' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,rgba(240,165,0,0.5),transparent)' }} />
@@ -1046,7 +1033,6 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* Nav */}
           <nav style={{ flex: 1, padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: 3, overflowY: 'auto' }}>
             <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 9, color: 'rgba(255,255,255,0.18)', letterSpacing: '0.18em', textTransform: 'uppercase', padding: '4px 10px 8px', margin: 0 }}>Navigation</p>
             {NAV.map(n => {
@@ -1072,7 +1058,6 @@ export default function AdminDashboard() {
             })}
           </nav>
 
-          {/* Logout */}
           <div style={{ padding: '10px', borderTop: `1px solid ${BORDER}` }}>
             <button onClick={logout} style={{ width: '100%', background: 'transparent', border: '1px solid rgba(248,113,113,0.12)', borderRadius: 10, padding: '10px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 9, justifyContent: 'center', color: 'rgba(248,113,113,0.5)', fontFamily: "'DM Sans',sans-serif", fontSize: 12, fontWeight: 500, transition: 'all 0.18s', letterSpacing: '0.04em' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.08)'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.28)'; e.currentTarget.style.color = '#f87171'; }}
